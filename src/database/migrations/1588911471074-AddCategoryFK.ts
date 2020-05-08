@@ -9,7 +9,7 @@ export default class CreateTransactions1588911471074
         name: 'TransactionCategoryFK',
         columnNames: ['category_id'],
         referencedColumnNames: ['id'],
-        referencedTableName: 'transaction_categories',
+        referencedTableName: 'categories',
         onDelete: 'SET NULL',
         onUpdate: 'CASCADE',
       }),

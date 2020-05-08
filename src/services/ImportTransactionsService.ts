@@ -1,8 +1,39 @@
+import fs from 'fs';
+import csv from 'csv-parse';
+
 import Transaction from '../models/Transaction';
+import CreateTransactionService from './CreateTransactionService';
+
+interface TransactionDTO {
+  title: string;
+  type: 'income' | 'outcome';
+  value: string;
+  category: string;
+}
 
 class ImportTransactionsService {
-  async execute(): Promise<Transaction[]> {
-    // TODO
+  async execute(file: Express.Multer.File): Promise<Transaction[]> {
+    const transactions: TransactionDTO[] = [];
+    const createTransactionService = new CreateTransactionService();
+    const transactionsCreated: Transaction[] = [];
+
+    const stream = fs
+      .createReadStream(file.path)
+      .pipe(csv({ columns: true, from_line: 1, trim: true }));
+    stream.on('data', row => transactions.push(row));
+
+    await new Promise(resolve => {
+      stream.on('end', resolve);
+    });
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of transactions) {
+      // eslint-disable-next-line no-await-in-loop
+      const transactionCreated = await createTransactionService.execute(item);
+      transactionsCreated.push(transactionCreated);
+    }
+
+    return transactionsCreated;
   }
 }
 
