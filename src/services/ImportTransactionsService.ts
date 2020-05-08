@@ -17,13 +17,11 @@ class ImportTransactionsService {
     const createTransactionService = new CreateTransactionService();
     const transactionsCreated: Transaction[] = [];
 
-    const stream = fs
-      .createReadStream(file.path)
-      .pipe(csv({ columns: true, from_line: 1, trim: true }));
-    stream.on('data', row => transactions.push(row));
-
     await new Promise(resolve => {
-      stream.on('end', resolve);
+      fs.createReadStream(file.path)
+        .pipe(csv({ columns: true, from_line: 1, trim: true }))
+        .on('data', row => transactions.push(row))
+        .on('end', resolve);
     });
 
     // eslint-disable-next-line no-restricted-syntax
