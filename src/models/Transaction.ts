@@ -3,7 +3,8 @@ import {
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
-  OneToMany,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 
 import Category from './Category';
@@ -19,7 +20,7 @@ class Transaction {
   @Column()
   type: 'income' | 'outcome';
 
-  @Column('decimal')
+  @Column('integer')
   value: number;
 
   @Column()
@@ -31,8 +32,9 @@ class Transaction {
   @CreateDateColumn()
   updated_at: Date;
 
-  @OneToMany(type => Category, category => category.title)
-  categories: Category;
+  @ManyToOne(() => Category)
+  @JoinColumn({ name: 'category_id' })
+  category: Category;
 }
 
 export default Transaction;
